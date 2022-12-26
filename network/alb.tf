@@ -3,7 +3,7 @@ resource "aws_alb" "alb_example" {
   load_balancer_type = "application"
   internal = false
   idle_timeout = 60
-  enable_deletion_protection = true
+  enable_deletion_protection = false
 
   subnets = [ 
     aws_subnet.public_0.id,
@@ -47,6 +47,18 @@ module "http_redirect_sg" {
   cider_blocks = [ "0.0.0.0/0" ]
 }
 
-output "alb_dns_name" {
-  value = aws_alb.alb_example.dns_name
+# リスナーの作成
+# httpリスエストに対するレスポンス
+resource "aws_lb_listener" "http" {
+  load_balancer_arn = aws_alb.alb_example.arn
+  port = 80
+  protocol = "HTTP"
+  default_action {
+    type = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "これは「http」です"
+      status_code = 200
+    }
+  }
 }
