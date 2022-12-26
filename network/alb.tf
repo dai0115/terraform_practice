@@ -22,7 +22,7 @@ resource "aws_alb" "alb_example" {
     ]
 }
 
-
+# albにアタッチするsgモジュールを生成
 module "http_sg" {
   source = "./sg"
   name = "http-sg"
@@ -92,4 +92,44 @@ resource "aws_lb_listener" "redirect_http_to_https" {
       status_code = "HTTP_301"
     }
   }
+}
+
+resource "aws_lb_target_group" "tg_example" {
+  name = "tgExample"
+  target_type = "ip" # ECS Fargateの場合は、ipを指定
+  vpc_id = aws_vpc.vpc.id
+  port = 80
+  protocol = "HTTP"
+  deregistration_delay = 300
+  
+  health_check {
+    path = "/" # ヘルスチェックに利用するパス
+    healthy_threshold = 5 # 正常判定を行うまでのヘルスチェック実行回数
+    unhealthy_threshold = 2 # 以上判定を行うまでのヘルスチェック実行回数
+    timeout = 5
+    interval = 30 # 実行間隔
+    matcher = 200 # 正常判定時のHTTPステータスコード
+    port = "traffic-port"
+    protocol = "HTTP"
+  }
+  
+  depends_on = [
+    aws_alb.alb_example
+  ]
+}
+
+resource "aws_lb_listener_rule" "listener_rule_example" {
+  listener_arn = aws_lb_listener.https.arn
+  priority = 100
+  action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.tg_example.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/*"] #全てのパスへのアクセスを該当のtgにフォワード
+    }
+  }
+
 }
