@@ -57,6 +57,7 @@ resource "aws_s3_bucket_cors_configuration" "public" {
 # アクセスログ用のバケット
 resource "aws_s3_bucket" "alb_log" {
   bucket = "alb-log-${var.bucket_name_suffix}"
+  force_destroy = true
 }
 
 # アクセスログ用のバケットのライフサイクルポリシー
