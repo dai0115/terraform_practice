@@ -1,6 +1,6 @@
 # ホストゾーンの作成
 resource "aws_route53_zone" "route53_example" {
-  name = "daitestdns.tk"
+  name = var.dns_name
 }
 
 # DNSレコードの作成
