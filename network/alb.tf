@@ -22,6 +22,31 @@ resource "aws_alb" "alb_example" {
     ]
 }
 
+
+module "http_sg" {
+  source = "./sg"
+  name = "http-sg"
+  vpc_id = aws_vpc.vpc.id
+  port = 80
+  cider_blocks = [ "0.0.0.0/0" ]
+}
+
+module "https_sg" {
+  source = "./sg"
+  name = "https-sg"
+  vpc_id = aws_vpc.vpc.id
+  port = 443
+  cider_blocks = [ "0.0.0.0/0" ]
+}
+
+module "http_redirect_sg" {
+  source = "./sg"
+  name = "http_redirect-sg"
+  vpc_id = aws_vpc.vpc.id
+  port = 8080
+  cider_blocks = [ "0.0.0.0/0" ]
+}
+
 output "alb_dns_name" {
   value = aws_alb.alb_example.dns_name
 }
