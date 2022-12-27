@@ -18,7 +18,7 @@ module "compting" {
 }
 
 module "kms" {
-  source = "./kms"
+  source = "./encryption"
 }
 
 output "domain_name" {
