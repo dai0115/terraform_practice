@@ -3,7 +3,7 @@ resource "aws_ecs_cluster" "ecs_cluster" {
   name = "ecs_example"
 }
 
-# タスク定義
+# webサーバ用タスク定義
  resource "aws_ecs_task_definition" "task_definition" {
    family = "task-definition"
    cpu = 256
@@ -12,6 +12,44 @@ resource "aws_ecs_cluster" "ecs_cluster" {
    requires_compatibilities = [ "FARGATE" ]
    container_definitions = file("./computing/container_definition.json")
    execution_role_arn = module.ecs_task_execution_role.iam_role_arn # cloudwatch logsへのロギング用のロール
+}
+
+# バッチ用タスク定義
+ resource "aws_ecs_task_definition" "batch_example" {
+   family = "batch_example"
+   cpu = 256
+   memory = 512
+   network_mode = "awsvpc"
+   requires_compatibilities = [ "FARGATE" ]
+   container_definitions = file("./computing/batch_container_definition.json")
+   execution_role_arn = module.ecs_task_execution_role.iam_role_arn # cloudwatch logsへのロギング用のロール
+}
+
+# cloudwatchイベントルールの設定
+resource "aws_cloudwatch_event_rule" "batch_example" {
+  name = "batch_example"
+  description = "this is cloudwatch event rule to trigger ecs scheduled tasks"
+  schedule_expression = "cron(*/2 * * * ? *)"
+}
+
+# cloudwatchイベントルールとECSタスクターゲットを紐付ける
+resource "aws_cloudwatch_event_target" "batch_example" {
+  target_id = "batch_example"
+  rule = aws_cloudwatch_event_rule.batch_example.name
+  role_arn = module.ecs_events_role.iam_role_arn
+  arn = aws_ecs_cluster.ecs_cluster.arn # ここはクラスターを指定？
+
+  ecs_target {
+    task_count = 1
+    platform_version = "1.4.0"
+    task_definition_arn = aws_ecs_task_definition.batch_example.arn
+
+    network_configuration {
+      assign_public_ip = "false"
+      subnets = [var.private_subnet_0_id]
+    }
+  }
+
 }
 
 # ECSサービス
@@ -78,4 +116,16 @@ module "ecs_task_execution_role" {
   name = "ecs-task-execution"
   identifier = "ecs-tasks.amazonaws.com"
   policy = data.aws_iam_policy_document.ecs_task_execution.json
+}
+
+# scheduled-task実行のためのcloudwatch eventsIAMロール
+module "ecs_events_role" {
+  source = "../iam"
+  name = "ecs-events"
+  identifier = "events.amazonaws.com"
+  policy = data.aws_iam_policy.ecs_events_role_policy.policy
+}
+
+data "aws_iam_policy" "ecs_events_role_policy" {
+  arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceEventsRole"
 }
