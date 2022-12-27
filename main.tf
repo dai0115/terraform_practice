@@ -17,6 +17,10 @@ module "compting" {
   vpc_id = module.network.vpc_id
 }
 
+module "kms" {
+  source = "./kms"
+}
+
 output "domain_name" {
   value = module.network.domain_name
 }
