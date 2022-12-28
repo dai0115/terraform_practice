@@ -21,6 +21,15 @@ module "kms" {
   source = "./encryption"
 }
 
+module "db" {
+  source = "./db"
+  private_subnet_0_id = module.network.private_subnet_0_id
+  private_subnet_1_id = module.network.private_subnet_1_id
+  kms_key_arn = module.kms.kms_key_arn
+  cidr_block = module.network.cidr_block
+  vpc_id = module.network.vpc_id
+}
+
 output "domain_name" {
   value = module.network.domain_name
 }
