@@ -30,6 +30,10 @@ module "db" {
   vpc_id = module.network.vpc_id
 }
 
+module "cicd" {
+  source = "./cicd"
+}
+
 output "domain_name" {
   value = module.network.domain_name
 }
