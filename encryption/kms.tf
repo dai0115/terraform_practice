@@ -11,3 +11,7 @@ resource "aws_kms_alias" "example" {
   name = "alias/example"
   target_key_id = aws_kms_key.example.id
 }
+
+output "kms_key_arn" {
+  value = aws_kms_key.example.arn
+}
