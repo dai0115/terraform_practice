@@ -37,12 +37,13 @@ resource "aws_cloudwatch_event_target" "batch_example" {
   target_id = "batch_example"
   rule = aws_cloudwatch_event_rule.batch_example.name
   role_arn = module.ecs_events_role.iam_role_arn
-  arn = aws_ecs_cluster.ecs_cluster.arn # ここはクラスターを指定？
+  arn = aws_ecs_cluster.ecs_cluster.arn
 
   ecs_target {
+    launch_type = "FARGATE"
     task_count = 1
     platform_version = "1.4.0"
-    task_definition_arn = aws_ecs_task_definition.batch_example.arn
+    task_definition_arn = replace(aws_ecs_task_definition.batch_example.arn, "/:\\d+$/", "")
 
     network_configuration {
       assign_public_ip = "false"
