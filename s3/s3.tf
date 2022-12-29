@@ -61,7 +61,7 @@ resource "aws_s3_bucket" "alb_log" {
 }
 
 # アクセスログ用のバケットのライフサイクルポリシー
-resource "aws_s3_bucket_lifecycle_configuration" "lifecycle" {
+resource "aws_s3_bucket_lifecycle_configuration" "lifecycle_alb_log" {
   bucket = aws_s3_bucket.alb_log.id
 
   rule {
@@ -93,4 +93,22 @@ data "aws_iam_policy_document" "alb_log" {
 resource "aws_s3_bucket_policy" "alb_log" {
   bucket = aws_s3_bucket.alb_log.id
   policy = data.aws_iam_policy_document.alb_log.json
+}
+
+# artifact格納用のアーティファクトバケットの作成
+resource "aws_s3_bucket" "artifact" {
+  bucket = "artifact-pragmatic-terraform-dai1"
+}
+
+# artifact格納用のバケットのライフサイクルポリシー
+resource "aws_s3_bucket_lifecycle_configuration" "lifecycle_artifact" {
+  bucket = aws_s3_bucket.artifact.id
+
+  rule {
+    id = "lifecycle-rule1"
+    status = "Enabled"
+    expiration {
+        days = 30
+    }
+  }
 }
