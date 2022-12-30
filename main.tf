@@ -32,6 +32,9 @@ module "db" {
 
 module "cicd" {
   source = "./cicd"
+  ecs_cluster_name = module.compting.ecs_cluster_name
+  ecs_service_name = module.compting.ecs_service_name
+  artifact_bucket_id = module.s3.artifact_bucket_id
 }
 
 output "domain_name" {
