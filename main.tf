@@ -17,15 +17,17 @@ module "compting" {
   vpc_id = module.network.vpc_id
 }
 
-module "kms" {
+module "encryption" {
   source = "./encryption"
+  operation_bucket_id = module.s3.operation_bucket_id
+  operation_log_name = module.compting.operation_log_name
 }
 
 module "db" {
   source = "./db"
   private_subnet_0_id = module.network.private_subnet_0_id
   private_subnet_1_id = module.network.private_subnet_1_id
-  kms_key_arn = module.kms.kms_key_arn
+  kms_key_arn = module.encryption.kms_key_arn
   cidr_block = module.network.cidr_block
   vpc_id = module.network.vpc_id
 }
