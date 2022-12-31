@@ -11,7 +11,8 @@ resource "aws_ecs_cluster" "ecs_cluster" {
    network_mode = "awsvpc"
    requires_compatibilities = [ "FARGATE" ]
    container_definitions = file("./computing/container_definition.json")
-   execution_role_arn = module.ecs_task_execution_role.iam_role_arn # cloudwatch logsへのロギング用のロール
+   task_role_arn = module.ecs_task_role.iam_role_arn
+   execution_role_arn = module.ecs_task_execution_role.iam_role_arn
 }
 
 # バッチ用タスク定義
@@ -62,6 +63,7 @@ resource "aws_ecs_service" "aws_ecs_service" {
   launch_type = "FARGATE"
   platform_version = "1.4.0"
   health_check_grace_period_seconds = 60
+  enable_execute_command = true
 
   network_configuration {
     assign_public_ip = false
@@ -110,13 +112,35 @@ data "aws_iam_policy_document" "ecs_task_execution" {
     }
 }
 
-# ECSと関連付けるIAMロール
+# ECSタスク実行ロール
 # タスク定義に関連付けて、そこから生成されたタスクも実行権限を得る
 module "ecs_task_execution_role" {
   source = "../iam"
   name = "ecs-task-execution"
   identifier = "ecs-tasks.amazonaws.com"
   policy = data.aws_iam_policy_document.ecs_task_execution.json
+}
+
+# タスクロール用のポリシードキュメント
+data "aws_iam_policy_document" "ecs_task_role_ssmmessages" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "ssmmessages:CreateControlChannel",
+      "ssmmessages:CreateDataChannel",
+      "ssmmessages:OpenControlChannel",
+      "ssmmessages:OpenDataChannel"
+    ]
+    resources = ["*"]
+  }
+}
+
+# タスクロール用のIAMロールの生成
+module "ecs_task_role" {
+  source = "../iam"
+  name = "ecs-task"
+  identifier = "ecs-tasks.amazonaws.com"
+  policy = data.aws_iam_policy_document.ecs_task_role_ssmmessages.json
 }
 
 # scheduled-task実行のためのcloudwatch eventsIAMロール
