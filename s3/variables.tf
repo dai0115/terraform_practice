@@ -1,4 +1,4 @@
 variable "bucket_name_suffix" {
-  type = string
+  type    = string
   default = "pragmatic-terraform-dai1"
 }

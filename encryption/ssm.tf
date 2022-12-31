@@ -1,9 +1,9 @@
 resource "aws_ssm_parameter" "db_username" {
-  name = "/db/username"
-  value = "root"
-  type = "String"
+  name        = "/db/username"
+  value       = "root"
+  type        = "String"
   description = "username for Database"
-  overwrite = true
+  overwrite   = true
 
   lifecycle {
     ignore_changes = [value]
@@ -11,11 +11,11 @@ resource "aws_ssm_parameter" "db_username" {
 }
 
 resource "aws_ssm_parameter" "db_raw_password" {
-  name = "/db/raw_password"
-  value = "uninitialized"
-  type = "SecureString"
+  name        = "/db/raw_password"
+  value       = "uninitialized"
+  type        = "SecureString"
   description = "password for Database"
-  overwrite = true
+  overwrite   = true
 
   lifecycle {
     ignore_changes = [value]
@@ -24,8 +24,8 @@ resource "aws_ssm_parameter" "db_raw_password" {
 
 # SSM document
 resource "aws_ssm_document" "session_manger_run_shell" {
-  name = "SSMSessionManagerRunShell"
-  document_type = "Session"
+  name            = "SSMSessionManagerRunShell"
+  document_type   = "Session"
   document_format = "JSON"
 
   content = <<EOF

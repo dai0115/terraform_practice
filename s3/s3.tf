@@ -24,10 +24,10 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "encryption" {
 
 # プライベートバケットなのでパブリック・アクセスをブロックする
 resource "aws_s3_bucket_public_access_block" "private" {
-  bucket = aws_s3_bucket.private.id
-  block_public_acls = true
-  block_public_policy = true
-  ignore_public_acls = true
+  bucket                  = aws_s3_bucket.private.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
   restrict_public_buckets = true
 }
 
@@ -49,14 +49,14 @@ resource "aws_s3_bucket_cors_configuration" "public" {
   cors_rule {
     allowed_origins = ["*"]
     allowed_methods = ["GET"]
-    allowed_headers = [ "*" ]
+    allowed_headers = ["*"]
     max_age_seconds = 3000
   }
 }
 
 # アクセスログ用のバケット
 resource "aws_s3_bucket" "alb_log" {
-  bucket = "alb-log-${var.bucket_name_suffix}"
+  bucket        = "alb-log-${var.bucket_name_suffix}"
   force_destroy = true
 }
 
@@ -65,31 +65,31 @@ resource "aws_s3_bucket_lifecycle_configuration" "lifecycle_alb_log" {
   bucket = aws_s3_bucket.alb_log.id
 
   rule {
-    id = "lifecycle-rule1"
+    id     = "lifecycle-rule1"
     status = "Enabled"
     expiration {
-        days = 30
+      days = 30
     }
   }
 }
 
 # 書き込みのためのバケットポリシー
 data "aws_iam_policy_document" "alb_log" {
-    statement {
-      effect = "Allow"
-      actions = ["s3:PutObject"]
-      resources = [
-        "arn:aws:s3:::${aws_s3_bucket.alb_log.id}",
-        "arn:aws:s3:::${aws_s3_bucket.alb_log.id}/*"
-        ]
-      principals {
-        type = "AWS"
-        identifiers = ["582318560864"]
-      }
+  statement {
+    effect  = "Allow"
+    actions = ["s3:PutObject"]
+    resources = [
+      "arn:aws:s3:::${aws_s3_bucket.alb_log.id}",
+      "arn:aws:s3:::${aws_s3_bucket.alb_log.id}/*"
+    ]
+    principals {
+      type        = "AWS"
+      identifiers = ["582318560864"]
     }
+  }
 }
 
- # バケットとバケットポリシーの関連付け
+# バケットとバケットポリシーの関連付け
 resource "aws_s3_bucket_policy" "alb_log" {
   bucket = aws_s3_bucket.alb_log.id
   policy = data.aws_iam_policy_document.alb_log.json
@@ -105,10 +105,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "lifecycle_artifact" {
   bucket = aws_s3_bucket.artifact.id
 
   rule {
-    id = "lifecycle-rule1"
+    id     = "lifecycle-rule1"
     status = "Enabled"
     expiration {
-        days = 30
+      days = 30
     }
   }
 }
@@ -123,10 +123,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "operation_log" {
   bucket = aws_s3_bucket.operation_log.id
 
   rule {
-    id = "lifecycle-rule1"
+    id     = "lifecycle-rule1"
     status = "Enabled"
     expiration {
-        days = 30
+      days = 30
     }
   }
 }
