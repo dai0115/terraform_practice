@@ -112,3 +112,21 @@ resource "aws_s3_bucket_lifecycle_configuration" "lifecycle_artifact" {
     }
   }
 }
+
+# オペレーションログの格納用
+resource "aws_s3_bucket" "operation_log" {
+  bucket = "operationlog-pragmatic-terraform-dai1"
+}
+
+# オペレーションログ用のバケットのライフサイクルポリシー
+resource "aws_s3_bucket_lifecycle_configuration" "operation_log" {
+  bucket = aws_s3_bucket.operation_log.id
+
+  rule {
+    id = "lifecycle-rule1"
+    status = "Enabled"
+    expiration {
+        days = 30
+    }
+  }
+}

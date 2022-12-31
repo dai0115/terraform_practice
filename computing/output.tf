@@ -9,3 +9,7 @@ output "ecs_service_name" {
 output "operation_instance_id" {
   value = aws_instance.ec2_instance.id
 }
+
+output "operation_log_name" {
+  value = aws_instance.ec2_instance.id
+}
