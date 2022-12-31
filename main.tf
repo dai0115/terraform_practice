@@ -1,3 +1,11 @@
+terraform {
+  required_version = "1.3.5"
+}
+
+provider "aws" {
+  region = "ap-northeast-1"
+}
+
 module "s3" {
   source = "./s3"
 }
