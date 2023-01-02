@@ -70,7 +70,7 @@ resource "aws_db_instance" "instance_example" {
 
 # dbインスタンス用のセキュリティグループを作成
 module "db_sg" {
-  source       = "../network/sg"
+  source       = "../security_group"
   name         = "db_sg"
   port         = 3306
   vpc_id       = var.vpc_id

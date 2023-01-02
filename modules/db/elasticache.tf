@@ -39,7 +39,7 @@ resource "aws_elasticache_replication_group" "ecache" {
 
 # redis用のsgを作成
 module "redis_sg" {
-  source       = "../network/sg"
+  source       = "../security_group"
   name         = "redis-sg"
   vpc_id       = var.vpc_id
   port         = 6379

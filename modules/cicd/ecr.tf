@@ -7,5 +7,5 @@ resource "aws_ecr_repository" "ecr" {
 resource "aws_ecr_lifecycle_policy" "ecr_policy" {
   repository = aws_ecr_repository.ecr.name
 
-  policy = file("./cicd/ecr_policy.json")
+  policy = file("./modules/cicd/ecr_policy.json")
 }

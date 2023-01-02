@@ -10,7 +10,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   memory                   = 512
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  container_definitions    = file("./computing/container_definition.json")
+  container_definitions    = file("./modules/computing/container_definition.json")
   task_role_arn            = module.ecs_task_role.iam_role_arn
   execution_role_arn       = module.ecs_task_execution_role.iam_role_arn
 }
@@ -22,7 +22,7 @@ resource "aws_ecs_task_definition" "batch_example" {
   memory                   = 512
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  container_definitions    = file("./computing/batch_container_definition.json")
+  container_definitions    = file("./modules/computing/batch_container_definition.json")
   execution_role_arn       = module.ecs_task_execution_role.iam_role_arn # cloudwatch logsへのロギング用のロール
 }
 
@@ -89,7 +89,7 @@ resource "aws_ecs_service" "aws_ecs_service" {
 }
 
 module "nginx_sg" {
-  source       = "../network/sg"
+  source       = "../security_group"
   name         = "nginx-sg"
   vpc_id       = var.vpc_id
   port         = 80

@@ -8,7 +8,7 @@ resource "aws_kms_key" "example" {
 
 # カスタマーマスターキーへのエイリアスを設定
 resource "aws_kms_alias" "example" {
-  name          = "alias/example"
+  name          = "alias/kms"
   target_key_id = aws_kms_key.example.id
 }
 

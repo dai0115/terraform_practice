@@ -41,11 +41,16 @@ resource "aws_iam_instance_profile" "instance_profile" {
   role = module.ec2_for_ssm_role.iam_role_name
 }
 
+# 最新のAMIを取得する
+data "aws_ssm_parameter" "latest_amazon_linux" {
+  name = "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+}
+
 # EC2インスタンスの作成
 resource "aws_instance" "ec2_instance" {
-  ami                  = "ami-0bba69335379e17f8"
+  ami                  = data.aws_ssm_parameter.latest_amazon_linux.value
   instance_type        = "t3.micro"
   iam_instance_profile = aws_iam_instance_profile.instance_profile.name
   subnet_id            = var.private_subnet_0_id
-  user_data            = file("./computing/user_data.sh")
+  user_data            = file("./modules/computing/user_data.sh")
 }

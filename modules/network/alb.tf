@@ -24,7 +24,7 @@ resource "aws_alb" "alb_example" {
 
 # albにアタッチするsgモジュールを生成
 module "http_sg" {
-  source       = "./sg"
+  source       = "../security_group"
   name         = "http-sg"
   vpc_id       = aws_vpc.vpc.id
   port         = 80
@@ -32,7 +32,7 @@ module "http_sg" {
 }
 
 module "https_sg" {
-  source       = "./sg"
+  source       = "../security_group"
   name         = "https-sg"
   vpc_id       = aws_vpc.vpc.id
   port         = 443
@@ -40,7 +40,7 @@ module "https_sg" {
 }
 
 module "http_redirect_sg" {
-  source       = "./sg"
+  source       = "../security_group"
   name         = "http_redirect-sg"
   vpc_id       = aws_vpc.vpc.id
   port         = 8080

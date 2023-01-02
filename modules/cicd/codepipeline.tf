@@ -61,8 +61,8 @@ resource "aws_codepipeline" "codepipeline" {
 
       configuration = {
         ConnectionArn    = aws_codestarconnections_connection.codestarconnections.arn
-        FullRepositoryId = "dai0115/sample_project"
-        BranchName       = "main"
+        FullRepositoryId = local.github_repository_name
+        BranchName       = local.branch_name
       }
     }
   }
@@ -111,6 +111,7 @@ resource "aws_codepipeline" "codepipeline" {
   }
 }
 
+/*
 resource "aws_codepipeline_webhook" "webhook" {
   name            = "webhook"
   target_pipeline = aws_codepipeline.codepipeline.name
@@ -125,3 +126,4 @@ resource "aws_codepipeline_webhook" "webhook" {
     match_equals = "refs/head/{Branch}"
   }
 }
+*/
